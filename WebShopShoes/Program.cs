@@ -9,61 +9,67 @@ namespace Shoeshop
 {
     class Program
     {
-        public static bool WebshopMenu()
+        static void Main(string[] args)
+        {
+            WebshopMenu();
+        }
+
+        public static void WebshopMenu()
         {
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Admin");
             Console.WriteLine("2) Customer");
             Console.WriteLine("3) Exit");
 
-
-
             switch (Console.ReadLine())
             {
                 case "1":
                     AdminMenu();
-                    return true;
+                    break;
                 case "2":
                     CustomerMenu();
-                    return true;
+                    break;
                 case "3":
-                    //Exit();
-                    return true;
+                    Console.WriteLine("THANK YOU! BYE BYE!");
+                    Environment.Exit(0);
+                    break;
                 default:
-                    return true;
-
+                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                    WebshopMenu();
+                    break;
             }
-
         }
-        public static bool AdminMenu()
+        public static void AdminMenu()
         {
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Manage Categories");
             Console.WriteLine("2) Manage Products");
+            Console.WriteLine("3) Go back to main page");
 
             switch (Console.ReadLine())
             {
                 case "1":
                     ManageCategories();
-                    return true;
+                    break;
                 case "2":
                     ManageProducts();
-                    return true;
+                    break;
                 case "3":
-                    // Exit();
-                    return true;
+                    WebshopMenu();
+                    break;
                 default:
-                    return true;
+                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                    AdminMenu();
+                    break;
             }
         }
 
-        public static bool ManageCategories()
+        public static void ManageCategories()
         {
-          while (true)
-          { 
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Add a category");
             Console.WriteLine("2) Remove a category");
+            Console.WriteLine("3) Go back to Admin Menu");
             switch (Console.ReadLine())
             {
                 case "1":
@@ -72,13 +78,14 @@ namespace Shoeshop
                 case "2":
                     RemoveCategory();
                     break;
-                //case "3":
-                //    Exit();
-                //    return true;
+                case "3":
+                    AdminMenu();
+                    break;
                 default:
-                    return true;
+                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                    ManageCategories();
+                    break;
             }
-          }
         }
         public static void AddCategory()
         {
@@ -99,8 +106,9 @@ namespace Shoeshop
                 database.SaveChanges();
                 PrintCategories();
                 Console.WriteLine("Du har lagt till 1 ny kategori");
-                // System.Environment.Exit(1);
+
             }
+            ManageCategories();
 
         }
         public static void PrintCategories()
@@ -149,19 +157,19 @@ namespace Shoeshop
                 database.Attach(removeCategory);
                 database.Remove(removeCategory);
                 database.SaveChanges();
-                // System.Environment.Exit(1);
                 PrintCategories();
             }
+            ManageCategories();
 
         }
-        public static bool ManageProducts()
+        public static void ManageProducts()
         {
-           while (true) 
-           { 
+
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Add a Product");
             Console.WriteLine("2) Remove a Product");
             Console.WriteLine("3) Update a Product");
+            Console.WriteLine("4) Go back to Admin Menu");
             switch (Console.ReadLine())
             {
                 case "1":
@@ -172,15 +180,15 @@ namespace Shoeshop
                     break;
                 case "3":
                     UpdateProduct();
-                    return true;
+                    break;
                 case "4":
-                    // Exit();
-                   // return true;
+                    AdminMenu();
+                    break;
                 default:
-                    return true;
-            }
-           }
-
+                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                    ManageProducts();
+                    break;
+            }          
         }
         public static void AddProduct()
         {
@@ -210,16 +218,15 @@ namespace Shoeshop
                 {
                     database.Add(newProduct);
                     database.SaveChanges();
-                    Console.WriteLine("Du har lagt till 1 ny produkt");//rows affected
+                    Console.WriteLine("Du har lagt till 1 ny produkt");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine("You failed to add a product : " + e.Message);
+                    Console.WriteLine("You failed to add a product");
                 }
-
-
                 PrintProducts();
             }
+            ManageProducts();
         }
 
         public static void RemoveProduct()
@@ -240,12 +247,11 @@ namespace Shoeshop
                 database.Attach(removeProduct);
                 database.Remove(removeProduct);
                 database.SaveChanges();
-                // System.Environment.Exit(1);
-                PrintProducts();
             }
-
+            PrintProducts();
+            ManageProducts();
         }
-        
+
         public static void UpdateProduct()
         {
             using (var database = new ShoeShopContext())
@@ -268,207 +274,71 @@ namespace Shoeshop
                     result.ProductPrice = productPrice;
                     database.SaveChanges();
                 }
-
-                // System.Environment.Exit(1);
-                PrintProducts();
-
-
             }
-
+            PrintProducts();
+            ManageProducts();
         }
-        public static bool CustomerMenu()
+        public static void CustomerMenu()
         {
             Console.WriteLine("Welcome to Jenny's and Sophie's ShoeShop! Let them eat shoes!");
             ShowProducts.ShowProductSelection();
 
-            while (true)
-            {
-                Console.WriteLine("1) Show Sneakers:");
-                Console.WriteLine("2) Show Wintershoes");
-                Console.WriteLine("3) Show Sandals");
-                Console.WriteLine("4) Show Boots");
-                Console.WriteLine("5) Show Slippers");
-                Console.WriteLine("6) Search Product");
-                switch (Console.ReadLine())
+                using (var database = new ShoeShopContext())
                 {
-                    case "1":
-                        SneakerSection();
-                        break;
-                    case "2":
-                        WintershoeSection();
-                        break;
-                    case "3":
-                       SandalSection();
-                        break;
-                   case "4":
-                        BootSection();
-                        break;
-                   case "5":
-                        SlipperSection();
-                        break;
-                    case "6":
-                       // ProductSearch();
-                       break;
+                    var productList = database.Categories;
+                    foreach (var product in productList)
+                    {
+                        Console.WriteLine(product.Id + " <- " + product.CategoryName);
+                    }
+                };
 
-                    default:
-                        return true;
-                }
+                int sectionChosen = int.Parse(Console.ReadLine());
+                printSection(sectionChosen);
+
+            Console.WriteLine("1) Add a product to your order");
+            Console.WriteLine("2) Remove product from your order");
+            Console.WriteLine("3) View your order");
+            Console.WriteLine("4) Confirm your order");
+            Console.WriteLine("5) Go back to Main Menu");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    AddProductToCart();
+                    break;
+                case "2":
+                    RemoveProductToCart();
+                    break;
+                case "3":
+                    ViewCurrentOrder();
+                    break;
+                case "4":
+                    ConfirmCurrentOrder();
+                    break;
+                case "5":
+                    WebshopMenu();
+                    break;
+                default:
+                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                    CustomerMenu();
+                    break;
             }
+
+
         }
-        public static void SneakerSection()
+        public static void printSection(int sectionID)
         {
             using (var database = new ShoeShopContext())
             {
                 var productList = database.Products;
-                var selectedProducts = productList.Where(p => p.ProductCategoryId == 1);
-
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == sectionID);
 
                 foreach (var product in selectedProducts)
                 { 
-
-                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
-
+                    Console.WriteLine(product.Id + " <- " + product.ProductName);
                 }
             };
         }
-        public static void WintershoeSection()
-        {
-            using (var database = new ShoeShopContext())
-            {
-                var productList = database.Products;
-                var selectedProducts = productList.Where(p => p.ProductCategoryId == 2);
-
-
-                foreach (var product in selectedProducts)
-                {
-
-                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
-
-                }
-            };
-        }
-        public static void SandalSection()
-        {
-            using (var database = new ShoeShopContext())
-            {
-                var productList = database.Products;
-                var selectedProducts = productList.Where(p => p.ProductCategoryId == 3);
-
-
-                foreach (var product in selectedProducts)
-                {
-                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
-                }
-            };
-        }
-        public static void BootSection()
-        {
-            using (var database = new ShoeShopContext())
-            {
-                var productList = database.Products;
-                var selectedProducts = productList.Where(p => p.ProductCategoryId == 4);
-
-
-                foreach (var product in selectedProducts)
-                {
-                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
-                }
-            };
-        }
-        public static void SlipperSection()
-        {
-            using (var database = new ShoeShopContext())
-            {
-                var productList = database.Products;
-                var selectedProducts = productList.Where(p => p.ProductCategoryId == 5);
-
-
-                foreach (var product in selectedProducts)
-                {
-                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
-                }
-            };
-        }
-        //public static void AddCartLine(CartLine cl)
-        //{
-        //    var shoppingList = new List<CartLine>();
-
-        //    var userInputID = int.Parse(Console.ReadLine());
-        //    var userInputQuantity = int.Parse(Console.ReadLine());
-        //    foreach (var item in shoppingList)
-        //    {
-        //        if (item.ProductId == cl.ProductId)
-        //        {
-        //            item.Quantity += cl.Quantity;
-        //            //  item.Quantity = item.Quantity + cl.Quantity; det är samma
-        //            return;
-        //        }
-
-        //    }
-        //    shoppingList.Add(new CartLine(userInputID, userInputQuantity));
-        //    Console.WriteLine(shoppingList);
-        //    return;
-
-        //}
-
-
-
-        static void Main(string[] args)
-        {
-
-            WintershoeSection();
-
-
-
-
-            //    using (var db = new ShoeshopContext())
-            //{
-            //    var productcategories = db.Categories;
-
-            //    foreach (var category in productcategories)
-            //   {
-            //       Console.WriteLine(category.Id + "\t" + category.CategoryName);
-            //    }
-            //}
-
-            //using (var db = new ShoeshopContext())
-            //{
-            //    var cities = db.Products;
-
-            //    foreach (var city in cities)
-            //    {
-            //        Console.WriteLine(city.CityName);
-            //        using (var dbb = new ShoeshopContext())
-            //        {
-            //            var parkingHouses = dbb.ParkingHouses;
-            //            foreach (var house in parkingHouses)
-            //            {
-            //                if (city.Id == house.CityId)
-            //                    Console.WriteLine(house.HouseName);
-            //            }
-
-            //        }
-            //    }
-            //}
-
-            // while (true)
-            //{
-            //    using (var database = new ShoeshopContext())
-            //    {
-            //        var productList = database.Products;
-            //        foreach (var product in productList)
-            //        {
-            //            Console.WriteLine(product.Id + "\t" + String.Format("{0:.00}", product.ProductPrice) + "\t" + product.ProductName);
-            //        }
-            //    }
-
-
-            //Console.Clear();
-
-
-
-        }
-
+        
         public static void AddProductToCart(int productId, int quantity)
         {
             using (var db = new ShoeShopContext())
@@ -478,12 +348,18 @@ namespace Shoeshop
                                   select p).SingleOrDefault();
                 
                 {
-                    
-                    
                     CartLine cart = new CartLine(productId, quantity);
-                    cart.ProductId = productId;
-                    cart.Quantity = quantity;
-                    // db.Produkters.Update(prod); // ändringar ska göras efter köp
+
+                    var newProduct = new OrderDetail
+                    {
+                        OrderId = 1435,
+                        Product = prod,
+                        Quantity = cart.Quantity
+                    };
+
+
+                    db.OrderDetails.Add(newProduct);
+                    db.OrderDetails.Update(newProduct); // ändringar ska göras efter köp
                     //cart.Add(new CartLine(cart.ProductId, cart.Quantity));
                     return;
                 }
@@ -491,4 +367,4 @@ namespace Shoeshop
         }
 
     }
-    }
+}

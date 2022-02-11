@@ -3,6 +3,7 @@ using WebShopShoes.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WebShopShoes.Shopping;
+using System.Collections.Generic;
 
 namespace Shoeshop
 {
@@ -23,7 +24,7 @@ namespace Shoeshop
                     AdminMenu();
                     return true;
                 case "2":
-                    //Customer();
+                    CustomerMenu();
                     return true;
                 case "3":
                     //Exit();
@@ -119,10 +120,11 @@ namespace Shoeshop
             using (var database = new ShoeShopContext())
             {
                 var productList = database.Products;
+                Console.WriteLine("{0, -5} {1, 5}", "Product ID", "Category ID");
                 foreach (var product in productList)
                 {
                    //Console.WriteLine($"Product ID:{}Category ID:{-10}");
-                    Console.WriteLine("{0, -5} {1, 5}", "Product ID", "Category ID" );
+                    
                     Console.WriteLine(product.Id + "\t" + product.ProductCategoryId + "\t" + product.ProductName + "\t" + product.ProductPrice + "\t" + product.ProductInfo);
 
                 }
@@ -154,6 +156,8 @@ namespace Shoeshop
         }
         public static bool ManageProducts()
         {
+           while (true) 
+           { 
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Add a Product");
             Console.WriteLine("2) Remove a Product");
@@ -162,19 +166,20 @@ namespace Shoeshop
             {
                 case "1":
                     AddProduct();
-                    return true;
+                    break;
                 case "2":
                     RemoveProduct();
-                    return true;
+                    break;
                 case "3":
                     UpdateProduct();
                     return true;
                 case "4":
                     // Exit();
-                    return true;
+                   // return true;
                 default:
                     return true;
             }
+           }
 
         }
         public static void AddProduct()
@@ -240,26 +245,7 @@ namespace Shoeshop
             }
 
         }
-        //public static void UpdateProduct()
-        //{
-        //    using (var database = new ShoeshopContext())
-        //    {
-        //        PrintProducts();
-
-        //        Console.Write("Vilket produktnummer vill du uppdatera?: ");
-        //        var productNumber = int.Parse(Console.ReadLine());
-
-        //        Console.Write("Ange nytt produktpris: ");
-        //        var productPrice = Console.ReadLine();
-        //        Console.Write("Ange ny produktinfo: ");
-        //        var productInfo = Console.ReadLine();
-
-        //        var updateProduct = new Models.Product
-
-        //        {
-        //            Id = productNumber,
-        //            ProductPrice = decimal.Parse(productPrice),
-        //            ProductInfo = productInfo
+        
         public static void UpdateProduct()
         {
             using (var database = new ShoeShopContext())
@@ -290,15 +276,138 @@ namespace Shoeshop
             }
 
         }
-        //        };
-        //        database.Update(updateProduct);
+        public static bool CustomerMenu()
+        {
+            Console.WriteLine("Welcome to Jenny's and Sophie's ShoeShop! Let them eat shoes!");
+            ShowProducts.ShowProductSelection();
 
-        //        database.SaveChanges();
-        //        // System.Environment.Exit(1);
-        //        PrintProducts();
+            while (true)
+            {
+                Console.WriteLine("1) Show Sneakers:");
+                Console.WriteLine("2) Show Wintershoes");
+                Console.WriteLine("3) Show Sandals");
+                Console.WriteLine("4) Show Boots");
+                Console.WriteLine("5) Show Slippers");
+                Console.WriteLine("6) Search Product");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        SneakerSection();
+                        break;
+                    case "2":
+                        WintershoeSection();
+                        break;
+                    case "3":
+                       SandalSection();
+                        break;
+                   case "4":
+                        BootSection();
+                        break;
+                   case "5":
+                        SlipperSection();
+                        break;
+                    case "6":
+                       // ProductSearch();
+                       break;
 
+                    default:
+                        return true;
+                }
+            }
+        }
+        public static void SneakerSection()
+        {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Products;
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == 1);
+
+
+                foreach (var product in selectedProducts)
+                { 
+
+                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
+
+                }
+            };
+        }
+        public static void WintershoeSection()
+        {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Products;
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == 2);
+
+
+                foreach (var product in selectedProducts)
+                {
+
+                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
+
+                }
+            };
+        }
+        public static void SandalSection()
+        {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Products;
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == 3);
+
+
+                foreach (var product in selectedProducts)
+                {
+                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
+                }
+            };
+        }
+        public static void BootSection()
+        {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Products;
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == 4);
+
+
+                foreach (var product in selectedProducts)
+                {
+                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
+                }
+            };
+        }
+        public static void SlipperSection()
+        {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Products;
+                var selectedProducts = productList.Where(p => p.ProductCategoryId == 5);
+
+
+                foreach (var product in selectedProducts)
+                {
+                    Console.WriteLine(product.ProductName);//+ "\t" + product.ProductInfo);
+                }
+            };
+        }
+        //public static void AddCartLine(CartLine cl)
+        //{
+        //    var shoppingList = new List<CartLine>();
+
+        //    var userInputID = int.Parse(Console.ReadLine());
+        //    var userInputQuantity = int.Parse(Console.ReadLine());
+        //    foreach (var item in shoppingList)
+        //    {
+        //        if (item.ProductId == cl.ProductId)
+        //        {
+        //            item.Quantity += cl.Quantity;
+        //            //  item.Quantity = item.Quantity + cl.Quantity; det är samma
+        //            return;
+        //        }
 
         //    }
+        //    shoppingList.Add(new CartLine(userInputID, userInputQuantity));
+        //    Console.WriteLine(shoppingList);
+        //    return;
 
         //}
 
@@ -306,16 +415,9 @@ namespace Shoeshop
 
         static void Main(string[] args)
         {
-            //bool showMenu = true;
-            //while (showMenu)
-            //{
-            //    showMenu = WebshopMenu();
-            //}
 
-            Cart myCart = new Cart();
-            myCart.CartLines.Add(new CartLine(1, 2));
+            WintershoeSection();
 
-            WebshopMenu();
 
 
 
@@ -366,5 +468,27 @@ namespace Shoeshop
 
 
         }
+
+        public static void AddProductToCart(int productId, int quantity)
+        {
+            using (var db = new ShoeShopContext())
+            {
+                Product prod = (from p in db.Products
+                                  where p.Id == productId
+                                  select p).SingleOrDefault();
+                
+                {
+                    
+                    
+                    CartLine cart = new CartLine(productId, quantity);
+                    cart.ProductId = productId;
+                    cart.Quantity = quantity;
+                    // db.Produkters.Update(prod); // ändringar ska göras efter köp
+                    //cart.Add(new CartLine(cart.ProductId, cart.Quantity));
+                    return;
+                }
+            }
+        }
+
     }
-}
+    }

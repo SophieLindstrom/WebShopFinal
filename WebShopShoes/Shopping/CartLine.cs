@@ -8,7 +8,7 @@ namespace WebShopShoes.Shopping
 {
     public class CartLine
     {
-        public int ProductId { get; }
+        public int ProductId { get; set; }
         public int Quantity { get; set; }
         public CartLine(int productId, int quantity )
         {

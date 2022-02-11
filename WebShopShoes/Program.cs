@@ -9,6 +9,8 @@ namespace Shoeshop
 {
     class Program
     {
+        static Dictionary<Product, int> productCart = new Dictionary<Product, int>();
+
         static void Main(string[] args)
         {
             WebshopMenu();
@@ -282,45 +284,53 @@ namespace Shoeshop
         {
             Console.WriteLine("Welcome to Jenny's and Sophie's ShoeShop! Let them eat shoes!");
             ShowProducts.ShowProductSelection();
-
-                using (var database = new ShoeShopContext())
-                {
-                    var productList = database.Categories;
-                    foreach (var product in productList)
-                    {
-                        Console.WriteLine(product.Id + " <- " + product.CategoryName);
-                    }
-                };
-
+            PrintPorductCategories();
+                Console.WriteLine();
                 int sectionChosen = int.Parse(Console.ReadLine());
                 printSection(sectionChosen);
-
-            Console.WriteLine("1) Add a product to your order");
-            Console.WriteLine("2) Remove product from your order");
-            Console.WriteLine("3) View your order");
-            Console.WriteLine("4) Confirm your order");
-            Console.WriteLine("5) Go back to Main Menu");
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    AddProductToCart();
-                    break;
-                case "2":
-                    RemoveProductToCart();
-                    break;
-                case "3":
-                    ViewCurrentOrder();
-                    break;
-                case "4":
-                    ConfirmCurrentOrder();
-                    break;
-                case "5":
-                    WebshopMenu();
-                    break;
-                default:
-                    Console.WriteLine("Not a correct alternativ, please choose from below options: ");
-                    CustomerMenu();
-                    break;
+                Console.WriteLine("0) Just browsing");
+                Console.WriteLine("1) Add a product to your order");
+                Console.WriteLine("2) Remove product from your order");
+                Console.WriteLine("3) View your order");
+                Console.WriteLine("4) Confirm your order");
+                Console.WriteLine("5) Go back to Main Menu");
+                switch (Console.ReadLine())
+                {
+                    case "0":
+                        browse(); //navigera kring artiklar
+                    case "1":
+                        AddProductToCart(); //Sparar product instanster i Program.productList
+                        break;
+                    case "2":
+                        RemoveProductToCart(); // tar bort product från Program.productList
+                        break;
+                    case "3":
+                        ViewCurrentOrder(); // Printar Program.productList av product
+                        break;
+                    case "4":
+                        ConfirmCurrentOrder(); //Här inne bestämmer man frakt och betal sätt och sedan spara i Order och Orderdetail
+                        Program.productCart.Clear();
+                        Console.WriteLine("You will retur to Main Window");
+                        WebshopMenu();
+                        break;
+                    case "5":
+                        Console.WriteLine("THIS WILL CLEAR YOUR CURRENT ORDER LIST  -  ARE YOU SURE? yes or no?");
+                        string answer = Console.ReadLine();
+                        if ("yes" == answer)
+                        {
+                            Program.productCart.Clear();
+                            WebshopMenu();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Not a correct alternativ, please choose from below options: ");
+                        CustomerMenu();
+                        break;
+                
             }
 
 
@@ -338,32 +348,34 @@ namespace Shoeshop
                 }
             };
         }
+
+        public static void PrintPorductCategories() {
+            using (var database = new ShoeShopContext())
+            {
+                var productList = database.Categories;
+                foreach (var product in productList)
+                {
+                    Console.WriteLine(product.Id + " <- " + product.CategoryName);
+                }
+            };
+        }
         
-        public static void AddProductToCart(int productId, int quantity)
+        public static void AddProductToCart()
         {
+            Console.WriteLine("Enter the product ID of the product your want to add to the cart");
+            int productId = int.Parse(Console.ReadLine());
+            Console.WriteLine("Enter the amount of the above product you want to buy");
+            int quantity = int.Parse(Console.ReadLine());
             using (var db = new ShoeShopContext())
+                //implementera try catch om produkten inte hittas.
             {
                 Product prod = (from p in db.Products
                                   where p.Id == productId
                                   select p).SingleOrDefault();
-                
-                {
-                    CartLine cart = new CartLine(productId, quantity);
-
-                    var newProduct = new OrderDetail
-                    {
-                        OrderId = 1435,
-                        Product = prod,
-                        Quantity = cart.Quantity
-                    };
-
-
-                    db.OrderDetails.Add(newProduct);
-                    db.OrderDetails.Update(newProduct); // ändringar ska göras efter köp
-                    //cart.Add(new CartLine(cart.ProductId, cart.Quantity));
-                    return;
-                }
-            }
+                productCart.Add(prod, quantity);
+            };
+            CustomerMenu();
+            
         }
 
     }

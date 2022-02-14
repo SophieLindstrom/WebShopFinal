@@ -185,13 +185,13 @@ namespace Shoeshop
         public static void AddProduct()
         {
             PrintCategories();
-            Console.Write("Ange kategori: ");
+            Console.Write("Enter Category: ");
             var productCategoryId = int.Parse(Console.ReadLine());
-            Console.Write("Ange produktnamn: ");
+            Console.Write("Enter Product Name: ");
             var productName = Console.ReadLine();
-            Console.Write("Ange produktpris: ");
+            Console.Write("Enter Product Price: ");
             var productPrice = Console.ReadLine();
-            Console.Write("Ange produktinfo: ");
+            Console.Write("Enter Product info: ");
             var productInfo = Console.ReadLine();
 
             using (var database = new ShoeShopContext())
@@ -207,7 +207,7 @@ namespace Shoeshop
                 {
                     database.Add(newProduct);
                     database.SaveChanges();
-                    Console.WriteLine("Du har lagt till 1 ny produkt");
+                    Console.WriteLine("You have added 1 new product");
                 }
                 catch (Exception)
                 {
@@ -223,7 +223,7 @@ namespace Shoeshop
             using (var database = new ShoeShopContext())
             {
                 PrintProducts();
-                Console.Write("Vilken produktnummer vill du ta bort?: ");
+                Console.Write("Which Product ID do you want to remove?: ");
                 var productNumber = int.Parse(Console.ReadLine());
                 var removeProduct = new Product
                 {
@@ -243,12 +243,12 @@ namespace Shoeshop
             {
                 PrintProducts();
 
-                Console.Write("Vilket produktnummer vill du uppdatera?: ");
+                Console.Write("Which Product ID do you want to update?: ");
                 var productNumber = int.Parse(Console.ReadLine());
 
-                Console.Write("Ange nytt produktpris: ");
+                Console.Write("Enter new Product price: ");
                 var productPrice = decimal.Parse(Console.ReadLine());
-                Console.Write("Ange ny produktinfo: ");
+                Console.Write("Enter new Product info: ");
                 var productInfo = Console.ReadLine();
 
                 var result = database.Products.Single(b => b.Id == productNumber);
@@ -285,7 +285,7 @@ namespace Shoeshop
                     CustomerMenu();
                     break;
                 case "4":
-                    ConfrimOrder(); //Här inne bestämmer man frakt och betal sätt och sedan spara i Order och Orderdetail
+                    ConfirmOrder(); //Här inne bestämmer man frakt och betal sätt och sedan spara i Order och Orderdetail
                     break;
                 case "5":
                     Console.WriteLine("THIS WILL CLEAR YOUR CURRENT ORDER LIST  -  ARE YOU SURE? yes or no?");
@@ -339,7 +339,7 @@ namespace Shoeshop
             Console.WriteLine("choose a category to view its products");
             int sectionChosen = int.Parse(Console.ReadLine());
             printSection(sectionChosen);
-            Console.WriteLine("Do you wish to buyt any of the products above? choose yes or no");
+            Console.WriteLine("Do you wish to buy any of the products above? choose yes or no");
             if (Console.ReadLine() == "yes")
             {
                 AddProductToCart();
@@ -360,7 +360,7 @@ namespace Shoeshop
             };
         }
 
-        public static void PrintPorductCategories()
+        public static void PrintProductCategories()
         {
             using (var database = new ShoeShopContext())
             {
@@ -385,7 +385,7 @@ namespace Shoeshop
             CustomerMenu();
         }
 
-        public static void ConfrimOrder()
+        public static void ConfirmOrder()
         {
             Console.WriteLine("Are you sure you want to confirm above order? yes or no?");
             if (Console.ReadLine() == "no")
@@ -444,7 +444,7 @@ namespace Shoeshop
                             database.Add(newCust);
                             database.SaveChanges();
                             Console.WriteLine("Dear " + firstName + " we are now proccessing you order.....");
-                            Console.WriteLine("Your new customer ID is ---> " + newCust.Id + " <--- Remeber this!");
+                            Console.WriteLine("Your new customer ID is ---> " + newCust.Id + " <--- Remember this!");
                         }
                         catch (Exception)
                         {
@@ -473,7 +473,7 @@ namespace Shoeshop
                     {
                         database.Add(newOrder);
                         database.SaveChanges();
-                        Console.WriteLine("Your order has order number is: -----> " + newOrder.Id);
+                        Console.WriteLine("Your order has order number: -----> " + newOrder.Id);
                     }
                     catch (Exception)
                     {
@@ -504,7 +504,7 @@ namespace Shoeshop
             };
             Program.productCart.Clear();
             Program.total = 0;
-            Console.WriteLine("Thank you for your order, you will be moved to the Main menu!");
+            Console.WriteLine("Thank you for your order!");
         }
         public static void ViewCurrentOrder()
         {

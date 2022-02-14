@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WebShopShoes.Shopping;
 using System.Collections.Generic;
+using Dapper;
+
 
 namespace Shoeshop
 {
@@ -13,7 +15,23 @@ namespace Shoeshop
         static Decimal total = 0;
         static void Main(string[] args)
         {
+            //string pName;
+            ////List<Product> products = new List<Product>();
+            //List<Product> products;
+            //Console.Write("Search product name: ");
+            //pName = Console.ReadLine();
+
+            //products = WebShopShoes.DapperModels.DapperQueries.Products(pName);
+            //Console.WriteLine();
+            //Console.WriteLine("Products: ");
+
+            //foreach (Product p in products)
+            //{
+            //    Console.WriteLine(p.id.ToString() + " " + p.product_name);
+            //}
+           
             WebshopMenu();
+            
         }
 
         public static void WebshopMenu()
@@ -266,28 +284,32 @@ namespace Shoeshop
         public static void CustomerMenu()
         {
             ShowProducts.ShowProductSelection();
-            Console.WriteLine("1) Browse and buy");
-            Console.WriteLine("2) Remove product from your order");
-            Console.WriteLine("3) View your order");
-            Console.WriteLine("4) Confirm your order");
-            Console.WriteLine("5) Go back to Main Menu");
+            Console.WriteLine("1) Search product (free text search)");
+            Console.WriteLine("2) Browse and buy");
+            Console.WriteLine("3) Remove product from your order");
+            Console.WriteLine("4) View your order");
+            Console.WriteLine("5) Confirm your order");
+            Console.WriteLine("6) Go back to Main Menu");
             string choice = Console.ReadLine();
             switch (choice)
             {
                 case "1":
-                    BrowseAndBuy(); //navigera kring artiklar
+                    SearchProduct();
                     break;
                 case "2":
-                    RemoveProductFromCart(); // tar bort product från Program.productList
+                    BrowseAndBuy(); //navigera kring artiklar
                     break;
                 case "3":
+                    RemoveProductFromCart(); // tar bort product från Program.productList
+                    break;
+                case "4":
                     ViewCurrentOrder(); // Printar Program.productList av product
                     CustomerMenu();
                     break;
-                case "4":
+                case "5":
                     ConfirmOrder(); //Här inne bestämmer man frakt och betal sätt och sedan spara i Order och Orderdetail
                     break;
-                case "5":
+                case "6":
                     Console.WriteLine("THIS WILL CLEAR YOUR CURRENT ORDER LIST  -  ARE YOU SURE? yes or no?");
                     string answer = Console.ReadLine();
                     if ("yes" == answer)
@@ -310,6 +332,8 @@ namespace Shoeshop
 
 
         }
+
+        
         public static void RemoveProductFromCart()
         {
             ViewCurrentOrder();
@@ -336,7 +360,7 @@ namespace Shoeshop
         public static void BrowseAndBuy()
         {
             PrintCategories();
-            Console.WriteLine("choose a category to view its products");
+            Console.WriteLine("Choose a category to view its products");
             int sectionChosen = int.Parse(Console.ReadLine());
             printSection(sectionChosen);
             Console.WriteLine("Do you wish to buy any of the products above? choose yes or no");
@@ -528,6 +552,30 @@ namespace Shoeshop
             };
             return retVal;
         }
+        
+            
+        
+          public static void SearchProduct()
+          {
+            using (var db = new ShoeShopContext())
+            {
+                Console.WriteLine("Search product: ");
+                string userInput = Console.ReadLine();
+                var products = db.Products;
+                var searchProduct = products.Where(sp => sp.ProductName.Contains(userInput)); 
+
+                Console.WriteLine("--------------------------");
+                Console.WriteLine("{0,-5}{1,-26}{2,-21}", "Id", "Name", "Price");
+                foreach (var product in searchProduct)
+                {
+                    Console.WriteLine($"{product.Id,-4} {product.ProductName,-25} {product.ProductPrice,-20:C2}");
+                }
+                Console.WriteLine("--------------------------");
+                CustomerMenu();
+            }
+                
+            
+          }
 
 
     }

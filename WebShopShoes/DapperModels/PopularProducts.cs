@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace WebShopShoes.DapperModels
 {
-    public class Product
+    public class PopularProducts
     {
-
-        public int id { get; set; }
         public string product_name { get; set; }
-        public int product_category_id { get; set; }
-        public decimal product_price { get; set; }
-        public string product_info { get; set; }
-
-
+        public int cnt { get; set; }
     }
 }

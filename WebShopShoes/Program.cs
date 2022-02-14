@@ -1,4 +1,5 @@
 ﻿using System;
+using WebShopShoes;
 using WebShopShoes.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -9,27 +10,27 @@ using Dapper;
 
 namespace Shoeshop
 {
-    class Program
+    public class Program
     {
         static Dictionary<Product, int> productCart = new Dictionary<Product, int>();
         static Decimal total = 0;
         static void Main(string[] args)
         {
             //string pName;
-            ////List<Product> products = new List<Product>();
-            //List<Product> products;
+            //List<WebShopShoes.DapperModels.Product> products = new List<WebShopShoes.DapperModels.Product>();
+           
             //Console.Write("Search product name: ");
             //pName = Console.ReadLine();
 
-            //products = WebShopShoes.DapperModels.DapperQueries.Products(pName);
+            //products = WebShopShoes.DapperModels.DapperQueries.SearchProducts(pName);
             //Console.WriteLine();
             //Console.WriteLine("Products: ");
 
-            //foreach (Product p in products)
+            //foreach (WebShopShoes.DapperModels.Product p in products)
             //{
             //    Console.WriteLine(p.id.ToString() + " " + p.product_name);
             //}
-           
+
             WebshopMenu();
             
         }
@@ -115,7 +116,7 @@ namespace Shoeshop
             Console.Write("Vilken kategori vill du lägga till?: ");
             var categoryName = Console.ReadLine();
 
-            using (var database = new ShoeShopContext())
+            using (var database = new WebShopShoes.Models.ShoeShopContext())
             {
                 var newCategory = new Category
                 {
@@ -283,7 +284,8 @@ namespace Shoeshop
         }
         public static void CustomerMenu()
         {
-            ShowProducts.ShowProductSelection();
+            EFQueries.PrintFavouriteProducts();
+            WebShopShoes.DapperModels.DapperQueries.PrintPopularProductsByCustomer();
             Console.WriteLine("1) Search product (free text search)");
             Console.WriteLine("2) Browse and buy");
             Console.WriteLine("3) Remove product from your order");
@@ -395,6 +397,33 @@ namespace Shoeshop
                 }
             };
         }
+        public static bool IsProductInCart(int productID)
+        {
+            foreach (var kvp in Program.productCart)
+            {
+                if (kvp.Key.Id == productID)
+                {
+                    return true;
+                }
+                
+            }
+            return false;
+        }
+        public static void UpdateProductInCart(int productID, int quantity)
+        {
+            foreach (var kvp in Program.productCart)
+            {
+                if (kvp.Key.Id == productID)
+                {
+                    int tempquant = kvp.Value;
+                    Product prod = kvp.Key;
+                    Program.productCart.Remove(kvp.Key);
+                    Program.productCart.Add(prod, tempquant + quantity);
+                    return;
+                }
+
+            }
+        }
 
         public static void AddProductToCart()
         {
@@ -403,8 +432,28 @@ namespace Shoeshop
             Product AddProd = FindProductBasedOnID(productID);
             Console.WriteLine("Enter the amount of the above product you want to buy");
             int quantity = int.Parse(Console.ReadLine());
-            Program.productCart.Add(AddProd, quantity);
-            Program.total += (AddProd.ProductPrice ?? 0 * quantity);
+
+            if (IsProductInCart(productID))
+            {
+                UpdateProductInCart(productID, quantity);
+            }
+            else
+            {
+                
+                Program.productCart.Add(AddProd, quantity);
+            }
+           // Product AddProd = FindProductBasedOnID(productID);
+           // Console.WriteLine("Enter the amount of the above product you want to buy");
+           // int quantity = int.Parse(Console.ReadLine());
+           // Program.productCart.Add(AddProd, quantity);
+            if (quantity > 0 )
+            {
+                decimal temp = AddProd.ProductPrice ??= 0;
+                temp *= quantity;
+                Program.total += temp;
+               // Program.total += AddProd.ProductPrice ??= 0 * quantity;
+            }
+           // Program.total += (AddProd.ProductPrice ?? 0 * quantity);
             ViewCurrentOrder();
             CustomerMenu();
         }
@@ -499,9 +548,9 @@ namespace Shoeshop
                         database.SaveChanges();
                         Console.WriteLine("Your order has order number: -----> " + newOrder.Id);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        Console.WriteLine("We failed to add your Order");
+                        Console.WriteLine("We failed to add your Order: " + e.Message);
                         CustomerMenu();
                     }
                     foreach (var produc in Program.productCart)

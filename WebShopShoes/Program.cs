@@ -14,6 +14,7 @@ namespace Shoeshop
     {
         static Dictionary<Product, int> productCart = new Dictionary<Product, int>();
         static Decimal total = 0;
+        static Decimal vat = 0.25m;
         static void Main(string[] args)
         {
             //string pName;
@@ -37,7 +38,8 @@ namespace Shoeshop
 
         public static void WebshopMenu()
         {
-            Console.WriteLine("Welcome to Jenny's and Sophie's ShoeShop! Let them eat shoes!");
+            Console.WriteLine("***** Welcome to Jenny's and Sophie's ShoeShop! Let them eat shoes! *****");
+            Console.WriteLine();
             Console.WriteLine("Choose an option:");
             Console.WriteLine("1) Admin");
             Console.WriteLine("2) Customer");
@@ -113,7 +115,7 @@ namespace Shoeshop
         {
 
             PrintCategories();
-            Console.Write("Vilken kategori vill du lägga till?: ");
+            Console.Write("Which category do you want to add?: ");
             var categoryName = Console.ReadLine();
 
             using (var database = new WebShopShoes.Models.ShoeShopContext())
@@ -126,7 +128,7 @@ namespace Shoeshop
                 database.Add(newCategory);
                 database.SaveChanges();
                 PrintCategories();
-                Console.WriteLine("Du har lagt till 1 ny kategori");
+                Console.WriteLine("You have added 1 new category");
             }
             ManageCategories();
 
@@ -151,7 +153,7 @@ namespace Shoeshop
                 foreach (var product in productList)
                 {
                     //Console.WriteLine($"Product ID:{}Category ID:{-10}");
-                    Console.WriteLine(product.Id + "\t" + product.ProductCategoryId + "\t" + product.ProductName + "\t" + product.ProductPrice + "\t" + product.ProductInfo);
+                    Console.WriteLine($"{product.Id} \t {product.ProductCategoryId} \t {product.ProductName} \t {product.ProductPrice:C2} \t {product.ProductInfo}");
                 }
             }
         }
@@ -161,7 +163,7 @@ namespace Shoeshop
             using (var database = new ShoeShopContext())
             {
                 PrintCategories();
-                Console.Write("Vilket kategorinummer vill du ta bort?: ");
+                Console.Write("Which category ID do you want to remove?: ");
                 var categoryNumber = int.Parse(Console.ReadLine());
                 var removeCategory = new Category
                 {
@@ -351,7 +353,7 @@ namespace Shoeshop
             Console.WriteLine("Enter the quantity to remove: ");
             int amount = int.Parse(Console.ReadLine());
             Program.productCart[removeProd] = (Program.productCart[removeProd] - amount);
-            Program.total -= (removeProd.ProductPrice ?? 0 * amount);
+            Program.total -= ((decimal)removeProd.ProductPrice * amount);
             if (Program.productCart[removeProd] == 0)
             {
                 Program.productCart.Remove(removeProd);
@@ -442,18 +444,15 @@ namespace Shoeshop
                 
                 Program.productCart.Add(AddProd, quantity);
             }
-           // Product AddProd = FindProductBasedOnID(productID);
-           // Console.WriteLine("Enter the amount of the above product you want to buy");
-           // int quantity = int.Parse(Console.ReadLine());
-           // Program.productCart.Add(AddProd, quantity);
+          
             if (quantity > 0 )
             {
-                decimal temp = AddProd.ProductPrice ??= 0;
-                temp *= quantity;
-                Program.total += temp;
-               // Program.total += AddProd.ProductPrice ??= 0 * quantity;
+                //decimal temp = AddProd.ProductPrice ??= 0;
+                //temp *= quantity;
+                Program.total += ((decimal)AddProd.ProductPrice * quantity);
+               
             }
-           // Program.total += (AddProd.ProductPrice ?? 0 * quantity);
+           
             ViewCurrentOrder();
             CustomerMenu();
         }
@@ -473,14 +472,14 @@ namespace Shoeshop
                     var shippinglist = database.Shippers;
                     foreach (var shipperi in shippinglist)
                     {
-                        Console.WriteLine(shipperi.Id + " <- " + shipperi.ShipperName + " The price is " + shipperi.FreightPrice);
+                        Console.WriteLine($" {shipperi.Id} <- {shipperi.ShipperName} The price is: {shipperi.FreightPrice:C2}");
                     }
                     Console.WriteLine("Please choose a freight alternative id: ");
                     int choiceFreight = int.Parse(Console.ReadLine());
                     var ship = (from s in database.Shippers
                                 where s.Id == choiceFreight
                                 select s).SingleOrDefault();
-                    Program.total += ship.FreightPrice ?? 0;
+                    Program.total += (decimal)ship.FreightPrice;
                     var paymentlist = database.Payments;
                     foreach (var payi in paymentlist)
                     {
@@ -578,18 +577,26 @@ namespace Shoeshop
             Program.productCart.Clear();
             Program.total = 0;
             Console.WriteLine("Thank you for your order!");
+            Console.WriteLine();
+            PrintReciept();
+
+
+
         }
         public static void ViewCurrentOrder()
         {
             Console.WriteLine("---------------------");
+            Console.WriteLine("This is your current order");
             foreach (var printi in Program.productCart)
             {
-                Console.WriteLine("Id: " + printi.Key.Id + " <-- " + "name: " + printi.Key.ProductName + " amount: " + printi.Value + " price/unit: " + printi.Key.ProductPrice);
+                Console.WriteLine($"Id: {printi.Key.Id} <-- name: {printi.Key.ProductName} amount: {printi.Value} price/unit: {printi.Key.ProductPrice:C2}");
             }
-            Console.WriteLine("Total amount: " + Program.total);
+            Console.WriteLine($"Total amount: {Program.total:C2}");
+            Console.WriteLine($"Total amount inclusive VAT: {Program.total * 1.25M:C2}");
             Console.WriteLine("---------------------");
+          
         } 
-
+        
         public static Product FindProductBasedOnID(int ID)
         {
             Product retVal;
@@ -625,6 +632,18 @@ namespace Shoeshop
                 
             
           }
+        public static void PrintReciept()
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine("Your order confirmation");
+            foreach (var printi in Program.productCart)
+            {
+                Console.WriteLine($"Product: {printi.Key.ProductName} Amount: {printi.Value} Price/unit: {printi.Key.ProductPrice:C2}");
+            }
+            Console.WriteLine($"Total amount: {Program.total:C2}");
+            Console.WriteLine($"Total amount inclusive VAT and freight: {Program.total * 1.25M:C2}");
+            Console.WriteLine("---------------------");
+        }
 
 
     }

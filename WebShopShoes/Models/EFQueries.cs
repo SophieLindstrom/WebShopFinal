@@ -13,8 +13,8 @@ namespace WebShopShoes.Models
             using (var db = new ShoeShopContext())
             {
                 var products = db.Products;
-                var selectedProducts = products.Where(p => p.Id == 2 || p.Id == 6 || p.Id == 18);
-                Console.WriteLine("\nOur favourite products:");
+                var selectedProducts = products.Where(p => p.Id == 4 || p.Id == 6 || p.Id == 14);
+                Console.WriteLine("\nOur spring favourite shoes:");
                 Console.WriteLine("--------------------------");
 
                 foreach (var prod in selectedProducts)

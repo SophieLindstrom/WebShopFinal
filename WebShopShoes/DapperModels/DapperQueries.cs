@@ -12,7 +12,7 @@ namespace WebShopShoes.DapperModels
 {
     public class DapperQueries
     {
-        static string ConnectionString = "data source=.\\SQLEXPRESS; initial catalog = ShoeShop; persist security info = True; Integrated Security = True;";
+        static string ConnectionString = "Server=tcp:webbshoppen.database.windows.net,1433;Initial Catalog=Shoeshop;Persist Security Info=False;User ID=sophielindstrom;Password=Lidnersgatan12b;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
 
         //public static List<Product> SearchProducts(string likeName)

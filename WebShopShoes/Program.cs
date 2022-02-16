@@ -383,7 +383,7 @@ namespace Shoeshop
 
                 foreach (var product in selectedProducts)
                 {
-                    Console.WriteLine(product.Id + " <- " + product.ProductName + " Price is: "+ product.ProductPrice);
+                    Console.WriteLine($"{product.Id} <- {product.ProductName} Price is: {product.ProductPrice:C2}");
                 }
             };
         }
@@ -574,11 +574,14 @@ namespace Shoeshop
                     }
                 }
             };
+
+            PrintReciept();
+
             Program.productCart.Clear();
             Program.total = 0;
             Console.WriteLine("Thank you for your order!");
             Console.WriteLine();
-            PrintReciept();
+           
 
 
 
@@ -591,8 +594,8 @@ namespace Shoeshop
             {
                 Console.WriteLine($"Id: {printi.Key.Id} <-- name: {printi.Key.ProductName} amount: {printi.Value} price/unit: {printi.Key.ProductPrice:C2}");
             }
-            Console.WriteLine($"Total amount: {Program.total:C2}");
-            Console.WriteLine($"Total amount inclusive VAT: {Program.total * 1.25M:C2}");
+            Console.WriteLine($"Total amount incl VAT: {Program.total:C2}");
+            Console.WriteLine($"VAT: {Program.total * vat:C2}");
             Console.WriteLine("---------------------");
           
         } 
@@ -621,10 +624,10 @@ namespace Shoeshop
                 var searchProduct = products.Where(sp => sp.ProductName.Contains(userInput)); 
 
                 Console.WriteLine("--------------------------");
-                Console.WriteLine("{0,-5}{1,-26}{2,-21}", "Id", "Name", "Price");
+                Console.WriteLine("{0,-4}{1,-25}{2,-15} {3,-14}", "Id", "Name", "Price", "Info");
                 foreach (var product in searchProduct)
                 {
-                    Console.WriteLine($"{product.Id,-4} {product.ProductName,-25} {product.ProductPrice,-20:C2}");
+                    Console.WriteLine($"{product.Id,-3} {product.ProductName,-24} {product.ProductPrice,-14:C2} {product.ProductInfo,-15}");
                 }
                 Console.WriteLine("--------------------------");
                 CustomerMenu();
@@ -640,8 +643,8 @@ namespace Shoeshop
             {
                 Console.WriteLine($"Product: {printi.Key.ProductName} Amount: {printi.Value} Price/unit: {printi.Key.ProductPrice:C2}");
             }
-            Console.WriteLine($"Total amount: {Program.total:C2}");
-            Console.WriteLine($"Total amount inclusive VAT and freight: {Program.total * 1.25M:C2}");
+            Console.WriteLine($"Total amount incl VAT: {Program.total:C2}");
+            Console.WriteLine($"VAT: {Program.total * vat:C2}");
             Console.WriteLine("---------------------");
         }
 
